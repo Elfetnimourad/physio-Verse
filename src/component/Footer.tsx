@@ -11,7 +11,7 @@ function Footer() {
 
        <Divider style={{border:'1px solid white'}}></Divider>
      <Box sx={{ gap: 1 }} style={{padding:5}}>
-      <Grid container spacing={2}>
+      {/* <Grid container spacing={2}>
         <Grid size={6}>
          <h2>PhysioVerse.</h2>
          <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Rerum unde quaerat eveniet cumque accusamus atque qui error quo enim fugiat?</p>
@@ -50,7 +50,7 @@ function Footer() {
         </div>
         </Grid>
         
-      </Grid>
+      </Grid> */}
        <p className="small mb-0 text-center">
           © {new Date().getFullYear()} Science Explorer | Made with curiosity 🪐
         </p>
