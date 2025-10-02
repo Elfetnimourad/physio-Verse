@@ -113,6 +113,10 @@ function Hero() {
     const [open, setOpen] = React.useState(false);
     const [opened, setOpened] = React.useState(false);
 
+    const openDialog=()=>{
+      setOpened(true);
+    }
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -142,10 +146,10 @@ function Hero() {
           <Typography variant="h6" noWrap component="div">
             PhysioVerse
           </Typography>
-                  <Button variant="contained" style={{height:"40px",marginLeft:'auto'}} onClick={()=>setOpened(true)}>Sign Up</Button>
+                  <Button variant="contained" style={{height:"40px",marginLeft:'auto'}} onClick={openDialog}>Sign Up</Button>
         </Toolbar>
       </AppBar>
-      <SignUp open={opened}/>
+      <SignUp open={opened} setOpened={setOpened} />
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>

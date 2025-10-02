@@ -7,7 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
  
-export default function SignUp({open}) {
+export default function SignUp({open,setOpened}) {
   const [isOpen, setIsOpen] = React.useState(false);
 
  const handleClickOpen = () => {
@@ -15,7 +15,7 @@ export default function SignUp({open}) {
   };
 
   const handleClose = () => {
-    setIsOpen(false);
+    setOpened(!open);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -29,10 +29,8 @@ export default function SignUp({open}) {
 
   return (
     <React.Fragment>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Open form dialog
-      </Button>
-      <Dialog open={isOpen} onClose={handleClose}>
+    
+      <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Subscribe</DialogTitle>
         <DialogContent>
           <DialogContentText>
