@@ -18,33 +18,19 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import SignIn from './SignIn'
-import signUpWithEmailAndPassword from './FirebaseConfig'
-export default function SignUp({open,setOpened}) {
+import SignUp from './SignUp'
+
+export default function SignIn({openToSign,setGoToSign}) {
   const [isOpen, setIsOpen] = React.useState(false);
-  const[email,setEmail] = React.useState<string>();
-    const[password,setPassword] = React.useState<string>();
-
-    const [seccussModal, setSeccussModal] = React.useState(false);
-    const [goToSign,setGoToSign] =React.useState(false);
-
-  const theme = useTheme();
 
  const handleClickOpen = () => {
     setIsOpen(open);
   };
 
-  const goToSignIn = () => {
-    setOpened(!open);
-    setGoToSign(true);
-    handleClose();
-    setSeccussModal(false)
+  const handleClose = () => {
+    setGoToSign(!openToSign);
   };
-const handleClose = () => {
-    setOpened(!open);
-  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -52,16 +38,10 @@ const handleClose = () => {
     const email = formJson.email;
     console.log(email);
     handleClose();
-   
   };
-  const submitHand = ()=>{
- setSeccussModal(true);
- signUpWithEmailAndPassword(email,password)
-  }
     const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -74,12 +54,11 @@ const handleClose = () => {
   return (
     <React.Fragment>
     
-      <Dialog open={open} onClose={handleClose} className='text-center'>
-        <DialogTitle>Sign Up</DialogTitle>
+      <Dialog open={openToSign} onClose={handleClose} className='text-center'>
+        <DialogTitle>Sign In</DialogTitle>
         <DialogContent>
           <DialogContentText>
-           
-Create an account
+ 
 
           </DialogContentText>
           <form onSubmit={handleSubmit} id="subscription-form">
@@ -105,15 +84,12 @@ Create an account
               type="email"
               fullWidth
               variant="standard"
-              value={email}
-              onChange={(e)=>setEmail(e.target.value)}
             />
                     <FormControl sx={{width:'100%'}} variant="standard">
 
               <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
           <Input
-          value={password}
-              onChange={(e)=>setPassword(e.target.value)}
+          
             id="standard-adornment-password"
             type={showPassword ? 'text' : 'password'}
             fullWidth
@@ -137,8 +113,8 @@ Create an account
           </form>
         </DialogContent>
         <DialogActions className='d-flex row justify-content-center'>
- <Button type="submit" form="subscription-form" sx={{width:'70%',m:1}} variant="contained" onClick={submitHand}>
-            Sign Up
+ <Button type="submit" form="subscription-form" sx={{width:'70%',m:1}} variant="contained">
+            Sign In
           </Button>
            <Button variant="contained" sx={{width:'70%',m:1}} startIcon={ <img
       src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
@@ -146,36 +122,11 @@ Create an account
       width="20"
       height="20"
     />}>
-Sign Up With Google</Button>
+Sign In With Google</Button>
          
         </DialogActions>
       </Dialog>
-       <Dialog
-        fullScreen={fullScreen}
-        open={seccussModal}
-        onClose={handleClose}
-        aria-labelledby="responsive-dialog-title"
-      >
-        <DialogTitle id="responsive-dialog-title">
-        {"Your Name"},  Welcome to PhysioVerse 🎉
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Your account has been created successfully!  
-          Start discovering and exploring the world of physiotherapy
-          with PhysioVerse.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={()=>setSeccussModal(false)}>
-            Disagree
-          </Button>
-          <Button onClick={goToSignIn} autoFocus>
-            Agree
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <SignIn openToSign={goToSign} setGoToSign={setGoToSign}/>
+
     </React.Fragment>
   );
 }
