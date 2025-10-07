@@ -1,6 +1,14 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  onSnapshot,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import {
   getAuth,
   signOut,
@@ -10,6 +18,8 @@ import {
   signInWithPopup,
   onAuthStateChanged,
   updateProfile,
+  getRedirectResult,
+  signInWithRedirect,
 } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -27,21 +37,74 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-const db = getFirestore();
+const db = getFirestore(app);
 
-const auth = getAuth(app)
+const auth = getAuth(app);
 
-export default function signUpWithEmailAndPassword (email,password){
-createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed up 
-    const user = userCredential.user;
-    // ...
-    console.log("user",user)
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ..
-  });
+const provider = new GoogleAuthProvider();
+
+export const signUpWithEmailAndPassword = (email, password) => {
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed up
+      const user = userCredential.user;
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ..
+    });
+};
+export default function signInWithEmailAndPasswordFunction(
+  username,
+  email,
+  password
+) {
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed in
+      const user = userCredential.user;
+      // ...
+      user.displayName = username;
+      console.log("user", user.displayName);
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+    });
 }
+export const addingChats = async (question, answer) => {
+  try {
+    const docRef = await addDoc(collection(db, "chats"), {
+      question: question,
+      answer: answer,
+    });
+    console.log("Document written with ID: ", docRef);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+};
+export const getData = (callback) => {
+  const collectionRef = collection(db, "chats");
+
+  const unsubscribe = onSnapshot(collectionRef, (snapshot) => {
+    const docs = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    callback(docs); // ✅ replace the data instead of pushing
+  });
+
+  return unsubscribe; // ✅ allow cleanup in React
+};
+export const getSpecificDoc = (docId, docArr) => {
+  // onSnapshot(colRef, (doc) => {
+  //   console.log("this is specfic doc", doc.data());
+  // });
+  // const docArr = [];
+  getDoc(doc(db, "chats", docId)).then((doc) => docArr.push(doc.data()));
+};
+
+export { signInWithPopup, auth, provider, GoogleAuthProvider };

@@ -18,10 +18,13 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import SignUp from './SignUp'
+import SignUp from './SignUp';
+import signInWithEmailAndPasswordFunction from './FirebaseConfig';
+import signInWithGoogle from './FirebaseConfig';
 
 export default function SignIn({openToSign,setGoToSign}) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [username,setUsername] = React.useState<string>()
 
  const handleClickOpen = () => {
     setIsOpen(open);
@@ -38,9 +41,12 @@ export default function SignIn({openToSign,setGoToSign}) {
     const email = formJson.email;
     console.log(email);
     handleClose();
+    signInWithEmailAndPasswordFunction(username,email,password);
+    signInWithGoogle()
   };
     const [showPassword, setShowPassword] = React.useState(false);
-
+ const[email,setEmail] = React.useState<string>();
+    const[password,setPassword] = React.useState<string>();
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -72,6 +78,8 @@ export default function SignIn({openToSign,setGoToSign}) {
               type="text"
               fullWidth
               variant="standard"
+              value={username}
+              onChange={(e)=>setUsername(e.target.value)}
             />
              
             <TextField
@@ -84,6 +92,8 @@ export default function SignIn({openToSign,setGoToSign}) {
               type="email"
               fullWidth
               variant="standard"
+              value={email}
+              onChange={(e)=>setEmail(e.target.value)}
             />
                     <FormControl sx={{width:'100%'}} variant="standard">
 
@@ -93,6 +103,8 @@ export default function SignIn({openToSign,setGoToSign}) {
             id="standard-adornment-password"
             type={showPassword ? 'text' : 'password'}
             fullWidth
+              value={password}
+              onChange={(e)=>setPassword(e.target.value)}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton

@@ -19,13 +19,13 @@ import NavigationIcon from '@mui/icons-material/Navigation';
 import InputLabel from '@mui/material/InputLabel';
 import Input from '@mui/material/Input';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import {addingChats,getData} from './FirebaseConfig'
 const genAI = new GoogleGenerativeAI("AIzaSyBrHXS-7FXuwewb_zwRDpGm2BiUUtyFMvQ"); 
 function Studies() {
  const [topic,setTopic] = useState<React.Dispatch<React.SetStateAction<string>>>();
 const [items,setItems] = useState<{}[]>([]);
 const [query ,setQuery] = useState<string>("");
-const [isLoading,setIsLoading] = useState<boolean>(false)
+const [isLoading,setIsLoading] = useState<boolean>(false);
 
 
 const promting = async (query: string | GenerateContentRequest | (string | Part)[]) => {
@@ -35,6 +35,7 @@ const promting = async (query: string | GenerateContentRequest | (string | Part)
     setItems([...items,{question:query,answer:result.response.text()}])
     console.log(result);
     console.log("this is items",items)
+    addingChats(query,result.response.text())
     // if(reg.test(item)){
     
     // }
@@ -46,36 +47,9 @@ const promting = async (query: string | GenerateContentRequest | (string | Part)
 
 
 
- async function fetchData(topic: string){
 
-    const res = await fetch(`https://api.duckduckgo.com/?q=YOUR_QUERY&format=json
-
-
-
-`);
-
- 
- 
-  const data = res.json();
- const b = data.then(c=>(c))
-console.log(b)
-  console.log(items)
-   }
 // console.log(topic)
-//   useEffect(() => {
-//   async function fetchData(){
-// const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/ react_js_concepts`);
-
-
-
-
-//   const data = res.json().then(d=>d);
-//   console.log(data)
-//    }
-
-//    fetchData()
-  
-//   }, [])
+ 
 setTimeout(()=>{
 setIsLoading(false)
 },3000)
@@ -113,7 +87,6 @@ console.log(items)
  {isLoading && <CircularProgress disableShrink />}
 
         </div>
-
     </div>
   )
 }

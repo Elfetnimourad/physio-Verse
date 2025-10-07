@@ -22,6 +22,10 @@ import Button from '@mui/material/Button';
 import SearchIcon from '@mui/icons-material/Search';
 import CreateIcon from '@mui/icons-material/Create';
 import SignUp from './SignUp';
+import Avatar from '@mui/material/Avatar';
+import {getData,getSpecificDoc} from './FirebaseConfig'
+import Studies from './Studies';
+
 
 
 const drawerWidth = 240;
@@ -107,16 +111,26 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     ],
   }),
 );
-function Hero() {
-    const theme = useTheme();
+function Hero({photo}) {
+  const [data,setData] = React.useState([])
 
-    const [open, setOpen] = React.useState(false);
-    const [opened, setOpened] = React.useState(false);
+  const theme = useTheme();
+ React.useEffect(() => {
+  const unsubscribe = getData((data) => setData(data));
 
-    const openDialog=()=>{
-      setOpened(true);
-    }
+  return () => unsubscribe(); // cleanup listener
+}, []);
 
+  const [open, setOpen] = React.useState(false);
+  const [opened, setOpened] = React.useState(false);
+    const [docArr, setDocArr] = React.useState([]);
+
+  // const [photo, setPhoto] = React.useState()
+console.log(photo)
+  const openDialog = () => {
+    setOpened(true);
+  }
+console.log(data)
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -124,10 +138,11 @@ function Hero() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  
+
+
   return (
-    <div className='d-flex row h-150 mb-4 ' style={{width:"85%",paddingLeft:"18%"}}>
-           <AppBar position="fixed" open={open} sx={{background:"radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%)"}}>
+    <div className='d-flex row h-150 mb-4' style={{ width: "85%", paddingLeft: "18%" }}>
+      <AppBar position="fixed" open={open} sx={{ background: "radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%)" }}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -146,11 +161,11 @@ function Hero() {
           <Typography variant="h6" noWrap component="div">
             PhysioVerse
           </Typography>
-                  <Button variant="contained" style={{height:"40px",marginLeft:'auto'}} onClick={openDialog}>Sign Up</Button>
+          <Button variant="contained" style={{ height: "40px", marginLeft: 'auto' }} onClick={openDialog}>Sign Up</Button>
         </Toolbar>
       </AppBar>
-      <SignUp open={opened} setOpened={setOpened} />
-      <Drawer variant="permanent" open={open}>
+      <SignUp open={opened} setOpened={setOpened}  />
+      <Drawer variant="permanent" open={open} className='d-flex'>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
@@ -168,11 +183,11 @@ function Hero() {
                   },
                   open
                     ? {
-                        justifyContent: 'initial',
-                      }
+                      justifyContent: 'initial',
+                    }
                     : {
-                        justifyContent: 'center',
-                      },
+                      justifyContent: 'center',
+                    },
                 ]}
               >
                 <ListItemIcon
@@ -183,25 +198,25 @@ function Hero() {
                     },
                     open
                       ? {
-                          mr: 3,
-                        }
+                        mr: 3,
+                      }
                       : {
-                          mr: 'auto',
-                        },
+                        mr: 'auto',
+                      },
                   ]}
                 >
-                  {index % 2 === 0 ? <CreateIcon/> : <SearchIcon/>}
+                  {index % 2 === 0 ? <CreateIcon /> : <SearchIcon />}
                 </ListItemIcon>
                 <ListItemText
                   primary={text}
                   sx={[
                     open
                       ? {
-                          opacity: 1,
-                        }
+                        opacity: 1,
+                      }
                       : {
-                          opacity: 0,
-                        },
+                        opacity: 0,
+                      },
                   ]}
                 />
               </ListItemButton>
@@ -210,10 +225,11 @@ function Hero() {
         </List>
         <Divider />
         <List>
-          <ListItem key={"text"} disablePadding sx={{ display: 'block',paddingLeft:1 }}><Typography variant="h6" noWrap component="div">
+          <ListItem key={"text"} disablePadding sx={{ display: 'block', paddingLeft: 1 }}><Typography variant="h6" noWrap component="div">
             Chats
-          </Typography></ListItem>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
+          </Typography>
+          </ListItem>
+          {data?.map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 sx={[
@@ -223,11 +239,11 @@ function Hero() {
                   },
                   open
                     ? {
-                        justifyContent: 'initial',
-                      }
+                      justifyContent: 'initial',
+                    }
                     : {
-                        justifyContent: 'center',
-                      },
+                      justifyContent: 'center',
+                    },
                 ]}
               >
                 <ListItemIcon
@@ -238,50 +254,52 @@ function Hero() {
                     },
                     open
                       ? {
-                          mr: 3,
-                        }
+                        mr: 3,
+                      }
                       : {
-                          mr: 'auto',
-                        },
+                        mr: 'auto',
+                      },
                   ]}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
                 <ListItemText
-                  primary={text}
+                onClick={()=>getSpecificDoc(text.id)}
+                  primary={text.question}
                   sx={[
                     open
                       ? {
-                          opacity: 1,
-                        }
+                        opacity: 1,
+                      }
                       : {
-                          opacity: 0,
-                        },
+                        opacity: 0,
+                      },
                   ]}
                 />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
+        <Avatar alt="Upload new avatar" className='mt-auto' src={photo} />
+
       </Drawer>
 
-         <h3 className="display-3 fw-bold mb-5 text-center">
-          Understanding the Universe
-        </h3>
-        <p className="text-center">
-          The universe is vast, mysterious, and filled with secrets yet to be
-          uncovered. Every theory we create brings us closer to understanding
-          the fabric of reality — the nature of time, space, energy, and matter.
-          As humanity, we are destined to explore, to question, and to expand
-          our vision beyond the stars.
-        </p>
+      <h3 className="display-3 fw-bold mb-5 text-center">
+        Understanding the Universe
+      </h3>
+      <p className="text-center">
+        The universe is vast, mysterious, and filled with secrets yet to be
+        uncovered. Every theory we create brings us closer to understanding
+        the fabric of reality — the nature of time, space, energy, and matter.
+        As humanity, we are destined to explore, to question, and to expand
+        our vision beyond the stars.
+      </p>
 
-        <p className="fst-italic mb-4 text-center">
-          As Galileo once looked through his telescope to expand our vision,  
-          we too must scale the scope of our understanding to see the universe.
-        </p>
+      <p className="fst-italic mb-4 text-center">
+        As Galileo once looked through his telescope to expand our vision,
+        we too must scale the scope of our understanding to see the universe.
+      </p>
     </div>
   )
 }
 
-export default Hero
+export default Hero;

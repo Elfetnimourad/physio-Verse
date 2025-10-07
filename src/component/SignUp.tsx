@@ -21,17 +21,52 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import SignIn from './SignIn'
-import signUpWithEmailAndPassword from './FirebaseConfig'
+import {signInWithPopup,auth,provider,GoogleAuthProvider,signUpWithEmailAndPassword} from './FirebaseConfig';
+import Hero from './Hero';
+
+
+
+
 export default function SignUp({open,setOpened}) {
+      // const [photo,setPhoto] = React.useState()
+  
   const [isOpen, setIsOpen] = React.useState(false);
   const[email,setEmail] = React.useState<string>();
     const[password,setPassword] = React.useState<string>();
+    const[photo,setPhoto] = React.useState<string>();
+    const[openHero,setOpenHero] = React.useState<boolean>(false);
 
     const [seccussModal, setSeccussModal] = React.useState(false);
     const [goToSign,setGoToSign] =React.useState(false);
 
   const theme = useTheme();
-
+ const signInWithGoogle = () => {
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      // The signed-in user info.
+      const user = result.user;
+      // IdP data available using getAdditionalUserInfo(result)
+      console.log("with google", user);
+      alert(`Welcome ${user.displayName}`);
+      const data = user.photoURL;
+            setPhoto(data)
+setOpenHero(true)
+      // ...
+    })
+    .catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      // ...
+    });
+};
  const handleClickOpen = () => {
     setIsOpen(open);
   };
@@ -52,8 +87,9 @@ const handleClose = () => {
     const email = formJson.email;
     console.log(email);
     handleClose();
-   
+
   };
+  console.log(photo)
   const submitHand = ()=>{
  setSeccussModal(true);
  signUpWithEmailAndPassword(email,password)
@@ -140,7 +176,7 @@ Create an account
  <Button type="submit" form="subscription-form" sx={{width:'70%',m:1}} variant="contained" onClick={submitHand}>
             Sign Up
           </Button>
-           <Button variant="contained" sx={{width:'70%',m:1}} startIcon={ <img
+           <Button variant="contained" onClick={signInWithGoogle} sx={{width:'70%',m:1}} startIcon={ <img
       src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
       alt="Google"
       width="20"
@@ -176,6 +212,7 @@ Sign Up With Google</Button>
         </DialogActions>
       </Dialog>
       <SignIn openToSign={goToSign} setGoToSign={setGoToSign}/>
+      {/* {photo.length && <Hero photo={photo}/>} */}
     </React.Fragment>
   );
 }
