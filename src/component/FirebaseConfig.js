@@ -8,6 +8,9 @@ import {
   onSnapshot,
   doc,
   getDoc,
+  serverTimestamp,
+  orderBy,
+  query,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -85,9 +88,10 @@ export const addingChats = async (question, answer) => {
     console.error("Error adding document: ", e);
   }
 };
+
 export const getData = (callback) => {
   const collectionRef = collection(db, "chats");
-
+  const q = query(collectionRef, orderBy("createdAt", "desc"));
   const unsubscribe = onSnapshot(collectionRef, (snapshot) => {
     const docs = snapshot.docs.map((doc) => ({
       id: doc.id,
@@ -100,11 +104,17 @@ export const getData = (callback) => {
   return unsubscribe; // ✅ allow cleanup in React
 };
 export const getSpecificDoc = (docId, docArr) => {
-  // onSnapshot(colRef, (doc) => {
-  //   console.log("this is specfic doc", doc.data());
-  // });
-  // const docArr = [];
-  getDoc(doc(db, "chats", docId)).then((doc) => docArr.push(doc.data()));
-};
+  const docRef = doc(db, "chats", docId);
 
+  // Start listening in real time
+  onSnapshot(docRef, (snapshot) => {
+    // clear or update array depending on your logic
+    docArr.length = 0; // optional: clear previous data
+    docArr.push(snapshot.data());
+
+    console.log("docArr:", docArr);
+  });
+
+  // You can return the unsubscribe if you need to stop listening later
+};
 export { signInWithPopup, auth, provider, GoogleAuthProvider };

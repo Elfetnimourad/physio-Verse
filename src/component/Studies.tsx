@@ -19,9 +19,12 @@ import NavigationIcon from '@mui/icons-material/Navigation';
 import InputLabel from '@mui/material/InputLabel';
 import Input from '@mui/material/Input';
 import CircularProgress from '@mui/material/CircularProgress';
-import {addingChats,getData} from './FirebaseConfig'
+import {addingChats,getData} from './FirebaseConfig';
+import {
+  serverTimestamp 
+} from "firebase/firestore";
 const genAI = new GoogleGenerativeAI("AIzaSyBrHXS-7FXuwewb_zwRDpGm2BiUUtyFMvQ"); 
-function Studies() {
+function Studies({docArr,listed}) {
  const [topic,setTopic] = useState<React.Dispatch<React.SetStateAction<string>>>();
 const [items,setItems] = useState<{}[]>([]);
 const [query ,setQuery] = useState<string>("");
@@ -32,7 +35,7 @@ const promting = async (query: string | GenerateContentRequest | (string | Part)
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const result = await model.generateContent(query);
-    setItems([...items,{question:query,answer:result.response.text()}])
+    setItems([...items,{question:query,answer:result.response.text(),createdAt:serverTimestamp }])
     console.log(result);
     console.log("this is items",items)
     addingChats(query,result.response.text())
@@ -56,7 +59,7 @@ setIsLoading(false)
 
 console.log(items)
   return (
-    <div className='d-flex row justify-content-center' >
+    <div className='d-flex row justify-content-center'>
           <OutlinedInput  placeholder="ask anything" id="fullWidth" 
                      endAdornment={<InputAdornment position="end"><NorthIcon sx={{cursor:'pointer',color:'white'}} onClick={()=>promting(query)}/></InputAdornment>}
  className="" style={{width:"50%",color:'white',borderColor:'white'}} multiline value={query} onChange={(e)=>setQuery(e.target.value)}/>
@@ -69,7 +72,21 @@ console.log(items)
       </div> */}
     
       <div className='p-5'>
-  {!isLoading && items.map((item)=>
+  {!listed ? items?.map((item)=>
+    <div className=''>
+    
+<div  style={{border:"1px solid black",width:'fit-content',padding:5,borderRadius:"20px",marginLeft:"auto",marginBottom:8,opacity:0.7}}>{item.question}</div>
+
+      <div><ReactMarkdown>{item.answer}</ReactMarkdown></div>
+ 
+    </div>
+
+ 
+  
+  
+  
+     
+         ):docArr?.map((item)=>
     <div className=''>
     
 <div  style={{border:"1px solid black",width:'fit-content',padding:5,borderRadius:"20px",marginLeft:"auto",marginBottom:8,opacity:0.7}}>{item.question}</div>

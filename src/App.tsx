@@ -5,7 +5,6 @@ import Hero from './component/Hero'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Studies from './component/Studies';
 import "./App.css"
-import { SignContextProvider } from './context/Sign';
 function App() {
 
   return (
@@ -17,7 +16,6 @@ function App() {
    <Hero/>
        <div className="stars"></div>
 
-      <Studies/>
              <div className="stars"></div>
 
    <Footer/>

@@ -25,6 +25,7 @@ import SignUp from './SignUp';
 import Avatar from '@mui/material/Avatar';
 import {getData,getSpecificDoc} from './FirebaseConfig'
 import Studies from './Studies';
+import NewChat from './NewChat';
 
 
 
@@ -119,11 +120,13 @@ function Hero({photo}) {
   const unsubscribe = getData((data) => setData(data));
 
   return () => unsubscribe(); // cleanup listener
+ 
 }, []);
 
   const [open, setOpen] = React.useState(false);
   const [opened, setOpened] = React.useState(false);
-    const [docArr, setDocArr] = React.useState([]);
+    const [docArr, setDocArr] = React.useState<{}[]>([]);
+   const [listed, setListed] = React.useState(false);
 
   // const [photo, setPhoto] = React.useState()
 console.log(photo)
@@ -205,7 +208,7 @@ console.log(data)
                       },
                   ]}
                 >
-                  {index % 2 === 0 ? <CreateIcon /> : <SearchIcon />}
+                  {index % 2 === 0 ? <CreateIcon onClick={()=>setDocArr([])}/> : <SearchIcon />}
                 </ListItemIcon>
                 <ListItemText
                   primary={text}
@@ -230,7 +233,7 @@ console.log(data)
           </Typography>
           </ListItem>
           {data?.map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+            <ListItem key={text.id} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 sx={[
                   {
@@ -263,7 +266,8 @@ console.log(data)
                 >
                 </ListItemIcon>
                 <ListItemText
-                onClick={()=>getSpecificDoc(text.id)}
+                onClick={()=>{setListed(true);getSpecificDoc(text.id,docArr);}}
+
                   primary={text.question}
                   sx={[
                     open
@@ -298,6 +302,7 @@ console.log(data)
         As Galileo once looked through his telescope to expand our vision,
         we too must scale the scope of our understanding to see the universe.
       </p>
+      <Studies docArr={docArr} listed={listed}/>
     </div>
   )
 }
