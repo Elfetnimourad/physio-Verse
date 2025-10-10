@@ -29,6 +29,7 @@ import Hero from './Hero';
 
 export default function SignUp({open,setOpened}) {
       // const [photo,setPhoto] = React.useState()
+    const [username,setUsername] = React.useState<string>()
   
   const [isOpen, setIsOpen] = React.useState(false);
   const[email,setEmail] = React.useState<string>();
@@ -84,7 +85,7 @@ const handleClose = () => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const formJson = Object.fromEntries((formData as any).entries());
-    const email = formJson.email;
+    // const email = formJson.email;
     console.log(email);
     handleClose();
 
@@ -92,7 +93,7 @@ const handleClose = () => {
   console.log(photo)
   const submitHand = ()=>{
  setSeccussModal(true);
- signUpWithEmailAndPassword(email,password)
+ signUpWithEmailAndPassword(username,email,password)
   }
     const [showPassword, setShowPassword] = React.useState(false);
 
@@ -129,6 +130,8 @@ Create an account
               type="text"
               fullWidth
               variant="standard"
+               value={username}
+              onChange={(e)=>setUsername(e.target.value)}
             />
              
             <TextField
@@ -211,8 +214,7 @@ Sign Up With Google</Button>
           </Button>
         </DialogActions>
       </Dialog>
-      <SignIn openToSign={goToSign} setGoToSign={setGoToSign}/>
-      {/* {photo.length && <Hero photo={photo}/>} */}
+       <SignIn openToSign={goToSign} setGoToSign={setGoToSign}/>
     </React.Fragment>
   );
 }

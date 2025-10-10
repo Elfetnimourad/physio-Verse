@@ -21,10 +21,12 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import SignUp from './SignUp';
 import signInWithEmailAndPasswordFunction from './FirebaseConfig';
 import signInWithGoogle from './FirebaseConfig';
+import Hero from './Hero';
 
 export default function SignIn({openToSign,setGoToSign}) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [username,setUsername] = React.useState<string>()
+  const [isSignIn, setIsSignIn] = React.useState(false);
 
  const handleClickOpen = () => {
     setIsOpen(open);
@@ -38,11 +40,12 @@ export default function SignIn({openToSign,setGoToSign}) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const formJson = Object.fromEntries((formData as any).entries());
-    const email = formJson.email;
+    // const email = formJson.email;
     console.log(email);
     handleClose();
     signInWithEmailAndPasswordFunction(username,email,password);
-    signInWithGoogle()
+    setIsSignIn(true)
+    console.log(username)
   };
     const [showPassword, setShowPassword] = React.useState(false);
  const[email,setEmail] = React.useState<string>();
@@ -122,12 +125,13 @@ export default function SignIn({openToSign,setGoToSign}) {
             }
           />
            </FormControl>
+            <Button type="submit" form="subscription-form" sx={{width:'70%',m:1}} variant="contained">
+            Sign In
+          </Button>
           </form>
         </DialogContent>
         <DialogActions className='d-flex row justify-content-center'>
- <Button type="submit" form="subscription-form" sx={{width:'70%',m:1}} variant="contained">
-            Sign In
-          </Button>
+
            <Button variant="contained" sx={{width:'70%',m:1}} startIcon={ <img
       src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
       alt="Google"

@@ -22,10 +22,11 @@ import Button from '@mui/material/Button';
 import SearchIcon from '@mui/icons-material/Search';
 import CreateIcon from '@mui/icons-material/Create';
 import SignUp from './SignUp';
+import SignIn from './SignIn';
+    import {onAuthStateChanged } from "firebase/auth";
 import Avatar from '@mui/material/Avatar';
-import {getData,getSpecificDoc} from './FirebaseConfig'
+import {getData,getSpecificDoc,addDataWithCustomId,auth} from './FirebaseConfig'
 import Studies from './Studies';
-import NewChat from './NewChat';
 
 
 
@@ -112,11 +113,27 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     ],
   }),
 );
-function Hero({photo}) {
+function Hero() {
+  
   const [data,setData] = React.useState([])
+  const [photo,setPhoto] = React.useState<string>()
 
   const theme = useTheme();
  React.useEffect(() => {
+onAuthStateChanged(auth,(user)=>{
+  if(user){
+
+setPhoto(user.photoURL)
+
+console.log("User state",user)
+
+  }else{
+console.log("User Signed Out")
+  }
+})
+
+
+
   const unsubscribe = getData((data) => setData(data));
 
   return () => unsubscribe(); // cleanup listener
@@ -127,6 +144,7 @@ function Hero({photo}) {
   const [opened, setOpened] = React.useState(false);
     const [docArr, setDocArr] = React.useState<{}[]>([]);
    const [listed, setListed] = React.useState(false);
+   const [id,setId] = React.useState()
 
   // const [photo, setPhoto] = React.useState()
 console.log(photo)
@@ -144,7 +162,7 @@ console.log(data)
 
 
   return (
-    <div className='d-flex row h-150 mb-4' style={{ width: "85%", paddingLeft: "18%" }}>
+    <div className={'d-flex row h-150 mb-4'} style={{ width: "85%", paddingLeft: "18%" }}>
       <AppBar position="fixed" open={open} sx={{ background: "radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%)" }}>
         <Toolbar>
           <IconButton
@@ -164,10 +182,11 @@ console.log(data)
           <Typography variant="h6" noWrap component="div">
             PhysioVerse
           </Typography>
-          <Button variant="contained" style={{ height: "40px", marginLeft: 'auto' }} onClick={openDialog}>Sign Up</Button>
-        </Toolbar>
+{<Button variant="contained" style={{ height: "40px", marginLeft: 'auto' }} onClick={openDialog}>Sign Up</Button>
+}        </Toolbar>
       </AppBar>
       <SignUp open={opened} setOpened={setOpened}  />
+
       <Drawer variant="permanent" open={open} className='d-flex'>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
@@ -266,7 +285,7 @@ console.log(data)
                 >
                 </ListItemIcon>
                 <ListItemText
-                onClick={()=>{setListed(true);getSpecificDoc(text.id,docArr);}}
+                onClick={()=>{setListed(true);getSpecificDoc(text.id,docArr);setId(text.id)}}
 
                   primary={text.question}
                   sx={[
@@ -302,7 +321,7 @@ console.log(data)
         As Galileo once looked through his telescope to expand our vision,
         we too must scale the scope of our understanding to see the universe.
       </p>
-      <Studies docArr={docArr} listed={listed}/>
+      <Studies docArr={docArr} listed={listed} id={id}/>
     </div>
   )
 }

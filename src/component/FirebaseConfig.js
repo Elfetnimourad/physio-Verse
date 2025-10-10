@@ -11,6 +11,8 @@ import {
   serverTimestamp,
   orderBy,
   query,
+  setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -46,12 +48,15 @@ const auth = getAuth(app);
 
 const provider = new GoogleAuthProvider();
 
-export const signUpWithEmailAndPassword = (email, password) => {
+export const signUpWithEmailAndPassword = (username, email, password) => {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed up
       const user = userCredential.user;
+      user.displayName = username;
+      console.log("username from sign up", user.displayName);
       // ...
+      console.log("Signed up");
     })
     .catch((error) => {
       const errorCode = error.code;
@@ -70,7 +75,7 @@ export default function signInWithEmailAndPasswordFunction(
       const user = userCredential.user;
       // ...
       user.displayName = username;
-      console.log("user", user.displayName);
+      console.log("username", user.displayName);
     })
     .catch((error) => {
       const errorCode = error.code;
@@ -83,6 +88,7 @@ export const addingChats = async (question, answer) => {
       question: question,
       answer: answer,
     });
+
     console.log("Document written with ID: ", docRef);
   } catch (e) {
     console.error("Error adding document: ", e);
@@ -117,4 +123,15 @@ export const getSpecificDoc = (docId, docArr) => {
 
   // You can return the unsubscribe if you need to stop listening later
 };
+
+export const addDocumentWithId = async (documentId, data) => {
+  try {
+    const docRef = doc(db, "chats", documentId);
+    await updateDoc(docRef, data);
+    console.log("Document successfully written with ID:", data);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+};
+
 export { signInWithPopup, auth, provider, GoogleAuthProvider };
