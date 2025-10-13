@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -23,17 +24,20 @@ import { useTheme } from '@mui/material/styles';
 import SignIn from './SignIn'
 import {signInWithPopup,auth,provider,GoogleAuthProvider,signUpWithEmailAndPassword} from './FirebaseConfig';
 import Hero from './Hero';
-
+import {onAuthStateChanged } from "firebase/auth";
+import Avatar from '@mui/material/Avatar';
 
 
 
 export default function SignUp({open,setOpened}) {
       // const [photo,setPhoto] = React.useState()
-    const [username,setUsername] = React.useState<string>()
+    const [username,setUsername] = React.useState<string>("");
+        const [user,setUser] = React.useState<string>();
+
   
   const [isOpen, setIsOpen] = React.useState(false);
-  const[email,setEmail] = React.useState<string>();
-    const[password,setPassword] = React.useState<string>();
+  const[email,setEmail] = React.useState<string>("");
+    const[password,setPassword] = React.useState<string>("");
     const[photo,setPhoto] = React.useState<string>();
     const[openHero,setOpenHero] = React.useState<boolean>(false);
 
@@ -41,6 +45,23 @@ export default function SignUp({open,setOpened}) {
     const [goToSign,setGoToSign] =React.useState(false);
 
   const theme = useTheme();
+ const regUserName = /^[a-zA-Z]+(\s+[a-zA-Z]+)?$/g ;
+  const regEmail = /^[a-z0-9]+@[a-z]+.[a-z]+$/g ;
+  const regPass = /^[a-z0-9]+$/ ;
+  React.useEffect(() => {
+    console.log("chof trah",regUserName.test(username),regEmail.test(email),regPass.test(password))
+  onAuthStateChanged(auth,(user)=>{
+    if(user){
+        setUser(user?.displayName);
+        console.log("User state",user);
+       
+  }else{
+  console.log("User Signed Out")
+    }
+  })
+  }, [email, password, regEmail, regPass, regUserName, username]);
+
+
  const signInWithGoogle = () => {
   signInWithPopup(auth, provider)
     .then((result) => {
@@ -90,11 +111,24 @@ const handleClose = () => {
     handleClose();
 
   };
-  console.log(photo)
+ 
   const submitHand = ()=>{
+    if(regUserName.test(username) && regEmail.test(email) && regPass.test(password)){
  setSeccussModal(true);
  signUpWithEmailAndPassword(username,email,password)
+    }else{
+      alert('There is Error')
+    }
+
+  
+
   }
+  console.log({
+  usernameValid: regUserName.test(username),
+  emailValid: regEmail.test(email),
+  passwordValid: regPass.test(password)
+});
+
     const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -176,6 +210,7 @@ Create an account
           </form>
         </DialogContent>
         <DialogActions className='d-flex row justify-content-center'>
+          
  <Button type="submit" form="subscription-form" sx={{width:'70%',m:1}} variant="contained" onClick={submitHand}>
             Sign Up
           </Button>
@@ -196,7 +231,7 @@ Sign Up With Google</Button>
         aria-labelledby="responsive-dialog-title"
       >
         <DialogTitle id="responsive-dialog-title">
-        {"Your Name"},  Welcome to PhysioVerse 🎉
+        {username},  Welcome to PhysioVerse 🎉
         </DialogTitle>
         <DialogContent>
           <DialogContentText>

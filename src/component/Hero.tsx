@@ -22,12 +22,14 @@ import Button from '@mui/material/Button';
 import SearchIcon from '@mui/icons-material/Search';
 import CreateIcon from '@mui/icons-material/Create';
 import SignUp from './SignUp';
-import SignIn from './SignIn';
     import {onAuthStateChanged } from "firebase/auth";
 import Avatar from '@mui/material/Avatar';
-import {getData,getSpecificDoc,addDataWithCustomId,auth} from './FirebaseConfig'
+import {getData,getSpecificDoc,deletedDocument,auth,signOutFunction} from './FirebaseConfig'
 import Studies from './Studies';
-
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import SignIn from './SignIn'
 
 
 const drawerWidth = 240;
@@ -115,17 +117,30 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 function Hero() {
   
-  const [data,setData] = React.useState([])
-  const [photo,setPhoto] = React.useState<string>()
+  const [data,setData] = React.useState([]);
+  const [photo,setPhoto] = React.useState<string>();
+ const [open, setOpen] = React.useState(false);
+  const [opened, setOpened] = React.useState(false);
+    const [docArr, setDocArr] = React.useState<{}[]>([]);
+   const [listed, setListed] = React.useState(false);
+   const [id,setId] = React.useState();
+   const [username,setUsername] = React.useState<string>();
+     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+    const [openMenu, setOpenMenu] = React.useState(false);
+    
 
   const theme = useTheme();
  React.useEffect(() => {
+  
 onAuthStateChanged(auth,(user)=>{
   if(user){
 
-setPhoto(user.photoURL)
+setPhoto(user?.photoURL);
+setUsername(user?.displayName);
+console.log("username",username)
+console.log('photo',photo)
 
-console.log("User state",user)
+console.log("User state from hero",user);
 
   }else{
 console.log("User Signed Out")
@@ -138,16 +153,18 @@ console.log("User Signed Out")
 
   return () => unsubscribe(); // cleanup listener
  
-}, []);
+}, [username,photo]);
 
-  const [open, setOpen] = React.useState(false);
-  const [opened, setOpened] = React.useState(false);
-    const [docArr, setDocArr] = React.useState<{}[]>([]);
-   const [listed, setListed] = React.useState(false);
-   const [id,setId] = React.useState()
+const openMenuFunction =(e)=>{
+  e.preventDefault();
+  setOpenMenu(true)
+}
+const closeMenuFunction =()=>{
+  setOpenMenu(false);
+  
+}
 
-  // const [photo, setPhoto] = React.useState()
-console.log(photo)
+
   const openDialog = () => {
     setOpened(true);
   }
@@ -159,7 +176,15 @@ console.log(data)
   const handleDrawerClose = () => {
     setOpen(false);
   };
+ const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
 
+
+  const handleCloseUserMenu = () => {
+    signOutFunction()
+    setAnchorElUser(null);
+  };
 
   return (
     <div className={'d-flex row h-150 mb-4'} style={{ width: "85%", paddingLeft: "18%" }}>
@@ -182,7 +207,36 @@ console.log(data)
           <Typography variant="h6" noWrap component="div">
             PhysioVerse
           </Typography>
-{<Button variant="contained" style={{ height: "40px", marginLeft: 'auto' }} onClick={openDialog}>Sign Up</Button>
+{username?.length > 0  ? <Box sx={{ flexGrow: 0,marginLeft: 'auto' }}>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+               {photo?.length > 0 ? <Avatar alt="Remy Sharp" src={photo} />:<Avatar>{username[0]?.toUpperCase()}</Avatar>}
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+                <MenuItem onClick={handleCloseUserMenu}>
+                  <Typography sx={{ textAlign: 'center' }}>Profile</Typography>
+                </MenuItem>
+          <MenuItem onClick={handleCloseUserMenu}>
+                  <Typography sx={{ textAlign: 'center' }}>Sign Out</Typography>
+                </MenuItem>
+            </Menu>
+          </Box>:<Button variant="contained" style={{ height: "40px", marginLeft: 'auto' }} onClick={openDialog}>Sign Up</Button>
 }        </Toolbar>
       </AppBar>
       <SignUp open={opened} setOpened={setOpened}  />
@@ -285,8 +339,11 @@ console.log(data)
                 >
                 </ListItemIcon>
                 <ListItemText
-                onClick={()=>{setListed(true);getSpecificDoc(text.id,docArr);setId(text.id)}}
+                              id="demo-positioned-button"
+      
 
+                onClick={()=>{setListed(true);getSpecificDoc(text.id,docArr);setId(text.id);}}
+                onContextMenu={openMenuFunction}
                   primary={text.question}
                   sx={[
                     open
@@ -298,12 +355,25 @@ console.log(data)
                       },
                   ]}
                 />
+                <Menu
+                id="menu-appbar"
+                sx={{transform:'translate(5%,-50%)'}}
+              anchorEl={openMenu}
+              keepMounted
+              open={Boolean(openMenu)}
+              onClose={closeMenuFunction}
+            >
+                <MenuItem onClick={()=>{closeMenuFunction();deletedDocument(text.id)}}>
+                  <Typography sx={{ textAlign: 'center' }}>delete the document</Typography>
+                </MenuItem>
+            </Menu>
               </ListItemButton>
+               
             </ListItem>
           ))}
         </List>
-        <Avatar alt="Upload new avatar" className='mt-auto' src={photo} />
-
+        <Avatar alt="Upload new avatar" className='mt-auto' src={photo} >{photo?.length === 0 && username[0]?.toUpperCase()}
+</Avatar>
       </Drawer>
 
       <h3 className="display-3 fw-bold mb-5 text-center">
@@ -322,6 +392,7 @@ console.log(data)
         we too must scale the scope of our understanding to see the universe.
       </p>
       <Studies docArr={docArr} listed={listed} id={id}/>
+      
     </div>
   )
 }

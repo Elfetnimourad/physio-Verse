@@ -22,10 +22,13 @@ import SignUp from './SignUp';
 import signInWithEmailAndPasswordFunction from './FirebaseConfig';
 import signInWithGoogle from './FirebaseConfig';
 import Hero from './Hero';
+  import {onAuthStateChanged } from "firebase/auth";
+import {auth} from './FirebaseConfig'
+
 
 export default function SignIn({openToSign,setGoToSign}) {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [username,setUsername] = React.useState<string>()
+  const [username,setUsername] = React.useState<string>("")
   const [isSignIn, setIsSignIn] = React.useState(false);
 
  const handleClickOpen = () => {
@@ -35,8 +38,13 @@ export default function SignIn({openToSign,setGoToSign}) {
   const handleClose = () => {
     setGoToSign(!openToSign);
   };
-
+   
+  const regUserName = /^[a-zA-Z]+(\s+[a-zA-Z]+)?$/ ;
+  const regEmail = /^[a-z0-9]+@[a-z]+.[a-z]+$/ ;
+  const regPass = /^[a-z0-9]+$/ ;
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        if(regUserName.test(username) && regEmail.test(email) && regPass.test(password)){
+
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const formJson = Object.fromEntries((formData as any).entries());
@@ -45,11 +53,15 @@ export default function SignIn({openToSign,setGoToSign}) {
     handleClose();
     signInWithEmailAndPasswordFunction(username,email,password);
     setIsSignIn(true)
+    console.log('mrigla from sign in')
     console.log(username)
+        }else{
+          alert("there is Error")
+        }
   };
     const [showPassword, setShowPassword] = React.useState(false);
- const[email,setEmail] = React.useState<string>();
-    const[password,setPassword] = React.useState<string>();
+ const[email,setEmail] = React.useState<string>("");
+    const[password,setPassword] = React.useState<string>("");
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -59,7 +71,11 @@ export default function SignIn({openToSign,setGoToSign}) {
   const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
-
+ console.log({
+  usernameValid: regUserName.test(username),
+  emailValid: regEmail.test(email),
+  passwordValid: regPass.test(password)
+});
   return (
     <React.Fragment>
     

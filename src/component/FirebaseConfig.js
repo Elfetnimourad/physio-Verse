@@ -13,6 +13,7 @@ import {
   query,
   setDoc,
   updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -73,7 +74,7 @@ export default function signInWithEmailAndPasswordFunction(
     .then((userCredential) => {
       // Signed in
       const user = userCredential.user;
-      // ...
+      // User Details
       user.displayName = username;
       console.log("username", user.displayName);
     })
@@ -133,5 +134,24 @@ export const addDocumentWithId = async (documentId, data) => {
     console.error("Error adding document: ", e);
   }
 };
+export function signOutFunction() {
+  signOut(auth)
+    .then(() => {
+      // Sign-out successful.
+      console.log("User signed out.");
+    })
+    .catch((error) => {
+      // An error happened.
+      console.error("Error signing out:", error);
+    });
+}
+
+export function deletedDocument(docId) {
+  const delRef = doc(db, "chats", docId);
+
+  deleteDoc(delRef).then(() => {
+    console.log("deleted");
+  });
+}
 
 export { signInWithPopup, auth, provider, GoogleAuthProvider };
