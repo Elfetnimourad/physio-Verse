@@ -30,7 +30,8 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import SignIn from './SignIn'
-
+import DeleteIcon from '@mui/icons-material/Delete';
+import TextField from '@mui/material/TextField';
 
 const drawerWidth = 240;
 
@@ -127,7 +128,10 @@ function Hero() {
    const [username,setUsername] = React.useState<string>();
      const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [openMenu, setOpenMenu] = React.useState(false);
-    
+    const [search,setSearch] = React.useState(false)
+        const [searchData,setSearchData] = React.useState("")
+
+
 
   const theme = useTheme();
  React.useEffect(() => {
@@ -151,10 +155,11 @@ console.log("User Signed Out")
 
   const unsubscribe = getData((data) => setData(data));
 
+
+
   return () => unsubscribe(); // cleanup listener
  
-}, [username,photo]);
-
+}, [username, photo]);
 const openMenuFunction =(e)=>{
   e.preventDefault();
   setOpenMenu(true)
@@ -164,6 +169,15 @@ const closeMenuFunction =()=>{
   
 }
 
+const searchingData =(event: { key: string; })=>{
+  if(event.key === "Enter" && searchData.length !== 0 ){
+setData(data.filter(e=>e?.question === searchData))
+console.log('data from data',data);
+return data;
+  }
+  return data;
+
+}
 
   const openDialog = () => {
     setOpened(true);
@@ -249,8 +263,7 @@ console.log(data)
         </DrawerHeader>
         <Divider />
         <List>
-          {['New Chat', 'Search'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+            <ListItem disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 sx={[
                   {
@@ -281,10 +294,10 @@ console.log(data)
                       },
                   ]}
                 >
-                  {index % 2 === 0 ? <CreateIcon onClick={()=>setDocArr([])}/> : <SearchIcon />}
+                 <CreateIcon onClick={()=>setDocArr([])}/> 
                 </ListItemIcon>
                 <ListItemText
-                  primary={text}
+                  primary={"New Chat"}
                   sx={[
                     open
                       ? {
@@ -297,16 +310,7 @@ console.log(data)
                 />
               </ListItemButton>
             </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          <ListItem key={"text"} disablePadding sx={{ display: 'block', paddingLeft: 1 }}><Typography variant="h6" noWrap component="div">
-            Chats
-          </Typography>
-          </ListItem>
-          {data?.map((text, index) => (
-            <ListItem key={text.id} disablePadding sx={{ display: 'block' }}>
+  <ListItem disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 sx={[
                   {
@@ -337,14 +341,10 @@ console.log(data)
                       },
                   ]}
                 >
+{search ? <TextField autoFocus id="standard-basic" label="Search for Data" variant="standard" value={searchData} onChange={(e)=>setSearchData(e.target.value)} onKeyDown={searchingData}/> : <SearchIcon onClick={()=>setSearch(true)}/> }
                 </ListItemIcon>
                 <ListItemText
-                              id="demo-positioned-button"
-      
-
-                onClick={()=>{setListed(true);getSpecificDoc(text.id,docArr);setId(text.id);}}
-                onContextMenu={openMenuFunction}
-                  primary={text.question}
+                  primary={"Search"}
                   sx={[
                     open
                       ? {
@@ -355,18 +355,69 @@ console.log(data)
                       },
                   ]}
                 />
-                <Menu
-                id="menu-appbar"
-                sx={{transform:'translate(5%,-50%)'}}
-              anchorEl={openMenu}
-              keepMounted
-              open={Boolean(openMenu)}
-              onClose={closeMenuFunction}
-            >
-                <MenuItem onClick={()=>{closeMenuFunction();deletedDocument(text.id)}}>
-                  <Typography sx={{ textAlign: 'center' }}>delete the document</Typography>
-                </MenuItem>
-            </Menu>
+              </ListItemButton>
+            </ListItem>
+    
+        </List>
+        <Divider />
+        <List>
+          <ListItem key={"text"} disablePadding sx={{ display: 'block', paddingLeft: 1 }}><Typography variant="h6" noWrap component="div">
+            Chats
+          </Typography>
+          </ListItem>
+          {data?.map((text, index) => (
+            <ListItem key={text.id} disablePadding sx={{ display: 'block' }}>
+              <ListItemButton 
+                sx={[
+                  {
+                    minHeight: 48,
+                    px: 2.5,
+                  },
+                  open
+                    ? {
+                      justifyContent: 'initial',
+                    }
+                    : {
+                      justifyContent: 'center',
+                    },
+                ]}
+              >
+                <ListItemIcon
+                  sx={[
+                    {
+                      minWidth: 0,
+                      justifyContent: 'center',
+                    },
+                    open
+                      ? {
+                        mr: 0.3,
+                      }
+                      : {
+                        mr: 'auto',
+                      },
+                  ]}
+                >
+                </ListItemIcon>
+                                                <DeleteIcon onClick={()=>deletedDocument(text.id)} sx={{color:"red"}}/>
+
+                <ListItemText
+                              id="demo-positioned-button"
+                    title={text?.question}
+
+                onClick={()=>{setListed(true);getSpecificDoc(text.id,docArr);setId(text.id);}}
+                onContextMenu={openMenuFunction}
+                  primary={text?.question}
+                  sx={[
+                    open
+                      ? {
+                        opacity: 1,
+                      }
+                      : {
+                        opacity: 0,
+                      },
+                  ]}
+                />
+
               </ListItemButton>
                
             </ListItem>

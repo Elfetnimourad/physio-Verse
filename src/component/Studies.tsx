@@ -19,7 +19,7 @@ import NavigationIcon from '@mui/icons-material/Navigation';
 import InputLabel from '@mui/material/InputLabel';
 import Input from '@mui/material/Input';
 import CircularProgress from '@mui/material/CircularProgress';
-import {addingChats,getData,addDocumentWithId} from './FirebaseConfig';
+import {addingChats,getData,addDocumentWithId,addToOldOne} from './FirebaseConfig';
 import {
   serverTimestamp 
 } from "firebase/firestore";
@@ -36,28 +36,25 @@ const promting = async (query: string | GenerateContentRequest | (string | Part)
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const result = await model.generateContent(query);
     
+if(docArr.length === 0){
+
 setItems([...items,{question:query,answer:result.response.text(),createdAt:serverTimestamp }])
-    console.log(result);
-    console.log("this is items",items)
+   
     addingChats(query,result.response.text())
-    // if(reg.test(item)){
-    
-    // }
-    
+   
     setIsLoading(true);
     setIsLoading(!listed);
- if(docArr.length>0){
-  docArr.push({question:query,answer:result.response.text(),createdAt:serverTimestamp })
-    console.log("this is docArr",docArr)
-    // addingChats(query,result.response.text())
-    console.log(id)
-    addDocumentWithId(id,{...docArr })
-    // if(reg.test(item)){
-    
-    // }
-    setIsLoading(true);
-    setIsLoading(!listed);
+
+
+
  }
+
+    addToOldOne(id,query,result.response.text())
+    console.log("this is docArr",docArr)
+   
+    setIsLoading(true);
+    setIsLoading(!listed);
+ 
     
 
 
@@ -67,7 +64,7 @@ setItems([...items,{question:query,answer:result.response.text(),createdAt:serve
 };
 
 
-
+// console.log("arr",arr)
 
 // console.log(topic)
  
@@ -93,9 +90,9 @@ console.log(items)
   {(!listed && !isLoading) ? items?.map((item)=>
     <div className=''>
     
-<div  style={{border:"1px solid black",width:'fit-content',padding:5,borderRadius:"20px",marginLeft:"auto",marginBottom:8,opacity:0.7}}>{item.question}</div>
+<div style={{border:"1px solid black",width:'fit-content',padding:5,borderRadius:"20px",marginLeft:"auto",marginBottom:8,opacity:0.7}}>{item?.question}</div>
 
-      <div><ReactMarkdown>{item.answer}</ReactMarkdown></div>
+      <div><ReactMarkdown>{item?.answer}</ReactMarkdown></div>
  
     </div>
 
@@ -119,6 +116,17 @@ console.log(items)
   
      
          ) }
+{docArr?.map(el=>el?.packs?.map(e=>
+  <>
+<div  style={{border:"1px solid black",width:'fit-content',padding:5,borderRadius:"20px",marginLeft:"auto",marginBottom:8,opacity:0.7}}>{e.question}</div>
+
+      <div><ReactMarkdown>{e.answer}</ReactMarkdown></div>
+  </>
+
+
+))}
+
+
  {isLoading && <CircularProgress disableShrink />}
 
         </div>

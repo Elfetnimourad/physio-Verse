@@ -14,6 +14,7 @@ import {
   setDoc,
   updateDoc,
   deleteDoc,
+  arrayUnion,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -152,6 +153,21 @@ export function deletedDocument(docId) {
   deleteDoc(delRef).then(() => {
     console.log("deleted");
   });
+  console.log("deleted id", docId);
 }
+export const addToOldOne = async (docId, question, answer) => {
+  try {
+    const docRef = doc(db, "chats", docId);
+    await updateDoc(docRef, {
+      packs: arrayUnion({
+        id: docId,
+        question: question,
+        answer: answer,
+      }),
+    });
+  } catch {
+    console.log("eerrrrrrrrr");
+  }
+};
 
 export { signInWithPopup, auth, provider, GoogleAuthProvider };
