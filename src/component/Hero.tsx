@@ -118,19 +118,19 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 function Hero() {
   
-  const [data,setData] = React.useState([]);
-  const [photo,setPhoto] = React.useState<string>();
+  const [data,setData] = React.useState<{}[]>([]);
+  const [photo,setPhoto] = React.useState<string | null>();
  const [open, setOpen] = React.useState(false);
   const [opened, setOpened] = React.useState(false);
     const [docArr, setDocArr] = React.useState<{}[]>([]);
    const [listed, setListed] = React.useState(false);
    const [id,setId] = React.useState();
-   const [username,setUsername] = React.useState<string>("");
+   const [username,setUsername] = React.useState<string | null>("");
      const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [openMenu, setOpenMenu] = React.useState(false);
     const [search,setSearch] = React.useState(false)
   const [searchData,setSearchData] = React.useState("")
-  const [arrOfData,setArrOfData] = React.useState([])
+  const [arrOfData,setArrOfData] = React.useState<React.SetStateAction<{id:string,question:string,answer:string}[]>>([])
 
 
 
@@ -157,20 +157,20 @@ setUsername("");
 
 
 
-  const unsubscribe = getData((data) => setData(data));
+  const unsubscribe = getData((data: React.SetStateAction<{}[]>) => setData(data));
 
 
 
   return () => unsubscribe(); // cleanup listener
  
 }, [username, photo]);
-const openMenuFunction =(e)=>{
+const openMenuFunction =(e: { preventDefault: () => void; })=>{
   e.preventDefault();
   setOpenMenu(true)
 }
 const searchingData =(event: { key: string; })=>{
   if(event.key === "Enter" && searchData.length !== 0 ){
-setArrOfData(data.filter(e=>e?.question === searchData))
+setArrOfData(data.filter((e)=>e?.question === searchData))
 console.log('data from data',data);
 return arrOfData;
   }
@@ -365,8 +365,8 @@ console.log(data)
             Chats
           </Typography>
           </ListItem>
-          {searchData.length > 0 ? (arrOfData?.map((text, index) => (
-            <ListItem key={text.id} disablePadding sx={{ display: 'block' }}>
+          {searchData.length > 0 ? (arrOfData?.map((text: { id: React.Key | React.SetStateAction<undefined> | null; question: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }) => (
+            <ListItem key={text?.id} disablePadding sx={{ display: 'block' }}>
               <ListItemButton 
                 sx={[
                   {
@@ -420,7 +420,7 @@ console.log(data)
 
               </ListItemButton>
                
-            </ListItem>))) : (data?.map((text, index) => (
+            </ListItem>))) : (data?.map((text) => (
             <ListItem key={text.id} disablePadding sx={{ display: 'block' }}>
               <ListItemButton 
                 sx={[
