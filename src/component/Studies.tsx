@@ -38,9 +38,9 @@ const promting = async (query: string | GenerateContentRequest | (string | Part)
     
 if(docArr.length === 0){
 
-setItems([...items,{question:query,answer:result.response.text(),createdAt:serverTimestamp }])
+setItems([...items,{question:query,answer:result.response.text(),createdAt:serverTimestamp() }])
    
-    addingChats(query,result.response.text())
+    addingChats(query,result.response.text(),serverTimestamp())
    
     setIsLoading(true);
     setIsLoading(!listed);
@@ -55,7 +55,7 @@ setItems([...items,{question:query,answer:result.response.text(),createdAt:serve
     setIsLoading(true);
     setIsLoading(!listed);
  
-    
+    setQuery("")
 
 
   } catch (err) {
@@ -77,7 +77,7 @@ console.log(items)
     <div className='d-flex row justify-content-center'>
           <OutlinedInput  placeholder="ask anything" id="fullWidth" 
                      endAdornment={<InputAdornment position="end"><NorthIcon sx={{cursor:'pointer',color:'white'}} onClick={()=>promting(query)}/></InputAdornment>}
- className="" style={{width:"50%",color:'white',borderColor:'white'}} multiline value={query} onChange={(e)=>setQuery(e.target.value)}/>
+ className="" style={{width:"82%",color:'white',borderColor:'white'}} multiline value={query} onChange={(e)=>setQuery(e.target.value)}/>
             {/* <Box sx={{width:5,transform:'translate(-215%,20%)'}} >
 <NavigationIcon/></Box> */}
     {/* <div className='d-flex column justify-content-evenly' style={{width:"60%"}}>
@@ -87,8 +87,8 @@ console.log(items)
       </div> */}
     
       <div className='p-5'>
-  {(!listed && !isLoading) ? items?.map((item)=>
-    <div className=''>
+  {(!listed && !isLoading) ? items?.map((item,index)=>
+    <div className='' key={index}>
     
 <div style={{border:"1px solid black",width:'fit-content',padding:5,borderRadius:"20px",marginLeft:"auto",marginBottom:8,opacity:0.7}}>{item?.question}</div>
 

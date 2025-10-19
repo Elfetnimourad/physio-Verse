@@ -89,6 +89,7 @@ export const addingChats = async (question, answer) => {
     const docRef = await addDoc(collection(db, "chats"), {
       question: question,
       answer: answer,
+      createdAt: serverTimestamp(),
     });
 
     console.log("Document written with ID: ", docRef);
@@ -99,13 +100,13 @@ export const addingChats = async (question, answer) => {
 
 export const getData = (callback) => {
   const collectionRef = collection(db, "chats");
-  const q = query(collectionRef, orderBy("createdAt", "desc"));
-  const unsubscribe = onSnapshot(collectionRef, (snapshot) => {
+  const q = query(collectionRef, orderBy("createdAt"));
+  const unsubscribe = onSnapshot(q, (snapshot) => {
     const docs = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
-
+    console.log(collectionRef);
     callback(docs); // ✅ replace the data instead of pushing
   });
 

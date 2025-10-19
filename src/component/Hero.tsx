@@ -129,7 +129,8 @@ function Hero() {
      const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [openMenu, setOpenMenu] = React.useState(false);
     const [search,setSearch] = React.useState(false)
-        const [searchData,setSearchData] = React.useState("")
+  const [searchData,setSearchData] = React.useState("")
+  const [arrOfData,setArrOfData] = React.useState([])
 
 
 
@@ -164,18 +165,14 @@ const openMenuFunction =(e)=>{
   e.preventDefault();
   setOpenMenu(true)
 }
-const closeMenuFunction =()=>{
-  setOpenMenu(false);
-  
-}
-
 const searchingData =(event: { key: string; })=>{
   if(event.key === "Enter" && searchData.length !== 0 ){
-setData(data.filter(e=>e?.question === searchData))
+setArrOfData(data.filter(e=>e?.question === searchData))
 console.log('data from data',data);
-return data;
+return arrOfData;
   }
-  return data;
+  
+return data;
 
 }
 
@@ -224,7 +221,7 @@ console.log(data)
 {username?.length > 0  ? <Box sx={{ flexGrow: 0,marginLeft: 'auto' }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-               {photo?.length > 0 ? <Avatar alt="Remy Sharp" src={photo} />:<Avatar>{username[0]?.toUpperCase()}</Avatar>}
+               {photo?.length > 0 ? <Avatar alt={username} src={photo} />:<Avatar>{username[0]?.toUpperCase()}</Avatar>}
               </IconButton>
             </Tooltip>
             <Menu
@@ -365,7 +362,62 @@ console.log(data)
             Chats
           </Typography>
           </ListItem>
-          {data?.map((text, index) => (
+          {searchData.length > 0 ? (arrOfData?.map((text, index) => (
+            <ListItem key={text.id} disablePadding sx={{ display: 'block' }}>
+              <ListItemButton 
+                sx={[
+                  {
+                    minHeight: 48,
+                    px: 2.5,
+                  },
+                  open
+                    ? {
+                      justifyContent: 'initial',
+                    }
+                    : {
+                      justifyContent: 'center',
+                    },
+                ]}
+              >
+                <ListItemIcon
+                  sx={[
+                    {
+                      minWidth: 0,
+                      justifyContent: 'center',
+                    },
+                    open
+                      ? {
+                        mr: 0.3,
+                      }
+                      : {
+                        mr: 'auto',
+                      },
+                  ]}
+                >
+                </ListItemIcon>
+                                                <DeleteIcon onClick={()=>deletedDocument(text.id)} sx={{color:"red"}}/>
+
+                <ListItemText
+                              id="demo-positioned-button"
+                    title={text?.question}
+
+                onClick={()=>{setListed(true);getSpecificDoc(text.id,docArr);setId(text.id);}}
+                onContextMenu={openMenuFunction}
+                  primary={text?.question}
+                  sx={[
+                    open
+                      ? {
+                        opacity: 1,
+                      }
+                      : {
+                        opacity: 0,
+                      },
+                  ]}
+                />
+
+              </ListItemButton>
+               
+            </ListItem>))) : (data?.map((text, index) => (
             <ListItem key={text.id} disablePadding sx={{ display: 'block' }}>
               <ListItemButton 
                 sx={[
@@ -421,7 +473,7 @@ console.log(data)
               </ListItemButton>
                
             </ListItem>
-          ))}
+          )))}
         </List>
         <Avatar alt="Upload new avatar" className='mt-auto' src={photo} >{photo?.length === 0 && username[0]?.toUpperCase()}
 </Avatar>
