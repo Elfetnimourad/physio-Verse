@@ -125,7 +125,7 @@ function Hero() {
     const [docArr, setDocArr] = React.useState<{}[]>([]);
    const [listed, setListed] = React.useState(false);
    const [id,setId] = React.useState();
-   const [username,setUsername] = React.useState<string>();
+   const [username,setUsername] = React.useState<string>("");
      const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [openMenu, setOpenMenu] = React.useState(false);
     const [search,setSearch] = React.useState(false)
@@ -148,7 +148,10 @@ console.log('photo',photo)
 console.log("User state from hero",user);
 
   }else{
-console.log("User Signed Out")
+console.log("User Signed Out");
+setPhoto("");
+setUsername("");
+
   }
 })
 
@@ -475,7 +478,7 @@ console.log(data)
             </ListItem>
           )))}
         </List>
-        <Avatar alt="Upload new avatar" className='mt-auto' src={photo} >{photo?.length === 0 && username[0]?.toUpperCase()}
+        <Avatar alt="Upload new avatar" className='mt-auto' src={photo} >{username?.length ? username[0]?.toUpperCase() : ""}
 </Avatar>
       </Drawer>
 
